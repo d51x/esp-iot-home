@@ -7,21 +7,25 @@ menu "Project config"
             bool "ESP-01"
             select ESPTOOLPY_FLASHMODE_DOUT
             select ESPTOOLPY_FLASHSIZE_1MB
-
+            select FLASHMODE_DOUT
+            
         config ESP_TYPE_01S_1MB
             bool "ESP-01S (1MB)" 
             select ESPTOOLPY_FLASHMODE_DOUT
             select ESPTOOLPY_FLASHSIZE_1MB
+            select FLASHMODE_DOUT
 
         config ESP_TYPE_01S_4MB
             bool "ESP-01S (4MB)" 
             select ESPTOOLPY_FLASHMODE_QIO
             select ESPTOOLPY_FLASHSIZE_4MB
+            select FLASHMODE_QIO
 
         config ESP-12
             bool "ESP-12"    
             select ESPTOOLPY_FLASHMODE_QIO
             select ESPTOOLPY_FLASHSIZE_4MB
+            select FLASHMODE_QIO
 
     endchoice
 
