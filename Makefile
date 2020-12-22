@@ -2,6 +2,11 @@
 # This is a project Makefile. It is assumed the directory this Makefile resides in is a
 # project subdirectory.
 #
+
+$(shell rm -rf build/*.bin)
+$(shell rm -rf build/*.elf)
+$(shell rm -rf build/*.map)
+
 ifneq ("$(wildcard project_name.txt)","")
 	PROJECT_NAME := $(shell cat project_name.txt)
 else
