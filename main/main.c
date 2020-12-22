@@ -50,11 +50,11 @@ void app_main(void)
 	//ESP_LOGI(TAG, "SDK: %s", esp_get_idf_version());
 	
     // get app version
-    esp_app_desc_t *app_desc = esp_ota_get_app_description();
-    const esp_partition_t* esp_part = esp_ota_get_running_partition();
+    const esp_app_desc_t *app_desc = esp_ota_get_app_description();
+    //const esp_partition_t* esp_part = esp_ota_get_running_partition();
     strncpy(FW_VER, app_desc->version, 32);
     strcpy(FW_VER, copy_str_from_str(FW_VER, "_"));
-    free(app_desc);
+    free((void *)app_desc);
 
     // ========================================= MODULES initialization START
     #ifdef CONFIG_COMPONENT_DEBUG
