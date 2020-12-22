@@ -14,7 +14,7 @@ ifneq ("$(wildcard version.txt)","")
 	PROJECT_VER := $(shell cat version.txt)
 endif         
 # else
-	 GIT_PROJECT_VER := $(shell cd ../${PROJECT_PATH} && git describe --always --tags 2> /dev/null)
+	 GIT_PROJECT_VER := $(shell git describe --always --tags 2> /dev/null)
 	 ifeq ("${GIT_PROJECT_VER}", "")
 #         PROJECT_VER := "1"
 		 #$(info Project is not inside a git repository, or git repository has no commits)
@@ -24,7 +24,7 @@ endif
 	 endif # a git repository
 # endif # version.txt
 
-#PROJECT_NAME := $(PROJECT_NAME)_$(PROJECT_VER)
+PROJECT_NAME := $(PROJECT_NAME)_$(PROJECT_VER)
 EXTRA_COMPONENT_DIRS := components
 include $(IDF_PATH)/make/project.mk
 
