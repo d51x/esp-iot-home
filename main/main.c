@@ -86,6 +86,7 @@ void app_main(void)
 	
 }
 
+
 void initialize_modules()
 {
     #ifdef CONFIG_SENSORS_GET
@@ -268,6 +269,38 @@ void initialize_modules_mqtt()
     #endif
 }
 
+#ifdef CONFIG_USER_WEB_PRINT
+static void _user_web_main(http_args_t *args)
+{
+    http_args_t *arg = (http_args_t *)args;
+    httpd_req_t *req = (httpd_req_t *)arg->req;
+
+    httpd_resp_sendstr_chunk(req, html_block_data_no_header_start);
+
+    user_web_main(req);
+
+    httpd_resp_sendstr_chunk(req, html_block_data_end);
+}
+#endif
+
+#ifdef CONFIG_USER_WEB_CONFIG
+static void _user_web_options(http_args_t *args)
+{
+    
+    http_args_t *arg = (http_args_t *)args;
+    httpd_req_t *req = (httpd_req_t *)arg->req;
+        
+    char *buf = malloc( strlen(html_block_data_header_start) + 20 );
+    sprintf(buf, html_block_data_header_start, "User options");
+    httpd_resp_sendstr_chunk(req, buf);
+    free(buf); 
+
+    user_web_options(req);
+
+    httpd_resp_sendstr_chunk(req, html_block_data_end);
+}
+#endif
+
 void initialize_modules_http(httpd_handle_t _server)
 {
     #ifdef CONFIG_SENSORS_GET
@@ -320,12 +353,17 @@ void initialize_modules_http(httpd_handle_t _server)
         pzem_http_init(_server);
     #endif
 
-    //http_args_t *p = calloc(1,sizeof(http_args_t));
-    //register_print_page_block( "user1", PAGES_URI[ PAGE_URI_ROOT], 0, user_web_main, p, NULL, NULL  );     
-    //register_print_page_block( "user1", PAGES_URI[ PAGE_URI_ROOT], 0, user_web_main, p, NULL, NULL  );     
-    //register_print_page_block( "sensors", "/sensors", 0, sensors_print, p, NULL, NULL  ); 
-    //add_uri_get_handler( _server, "/sensors", sensors_get_handler, NULL); 
+    #if CONFIG_USER_WEB_PRINT || CONFIG_USER_WEB_CONFIG
+    http_args_t *p = calloc(1,sizeof(http_args_t));
+    #endif
 
+    #ifdef CONFIG_USER_WEB_PRINT
+    register_print_page_block( "user1", PAGES_URI[ PAGE_URI_ROOT], 0, _user_web_main, p, NULL, NULL  );       
+    #endif
+
+    #ifdef CONFIG_USER_WEB_CONFIG
+    register_print_page_block( "user2", PAGES_URI[ PAGE_URI_CONFIG], 0, _user_web_options, p, user_process_param, NULL  );       
+    #endif
 
 }
 

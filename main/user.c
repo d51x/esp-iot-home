@@ -95,15 +95,15 @@ void test_mcp23017_isr_cb8(char *buf)
 
 #endif
 
-void test1(char *buf, void *args);
-void test2(char *buf, void *args);
+// void test1(char *buf, void *args);
+// void test2(char *buf, void *args);
 
-void test_recv1(char *buf, void *args);
-void test_recv2(char *buf, void *args);
+// void test_recv1(char *buf, void *args);
+// void test_recv2(char *buf, void *args);
 
 void user_setup(void *args)
 {
-    ESP_LOGW(TAG, __func__ );
+    ESP_LOGW(TAG, LOG_FMT() );
     
     // if ( softuart_open(0, 9600, 0 /*RX*/, 2 /*TX*/) ) {
     //     ESP_LOGW(TAG, "SoftUart0 opened" );
@@ -115,7 +115,8 @@ void user_setup(void *args)
 
 void user_http_init(void *args)
 {
-    ESP_LOGW(TAG, __func__ );
+    // функция вызывается после user_setup и старта webserver'a
+    ESP_LOGW(TAG, LOG_FMT() );
 
     #ifdef CONFIG_MCP23017_HTTP
     mcp23017_http_set_btn_name(mcp23017_h, 15, "Кнопка 1");
@@ -145,9 +146,11 @@ void user_http_init(void *args)
     #endif
 }
 
+// функция вызывается после user_setup и старта mqtt
+// в этой функции можно зарегистрировать свои кастомные колбеки на отправку и получение данных
 void user_mqtt_init(void *args)
 {
-    ESP_LOGW(TAG, __func__ );
+    ESP_LOGW(TAG, LOG_FMT() );
 
     //mqtt_add_periodic_publish_callback( "test1", test1, NULL);
     //mqtt_add_periodic_publish_callback( "test2", test2, NULL);
@@ -158,6 +161,7 @@ void user_mqtt_init(void *args)
 
 }
 
+// функция вызывает в основном цикле каждую секунду
 void user_loop(uint32_t sec)
 {
     // // Set Addr: B4 C0 A8 01 01 00 1E
@@ -224,48 +228,49 @@ void user_loop(uint32_t sec)
         #endif    
 }
 
-void user_web_main(http_args_t *args)
+#ifdef CONFIG_USER_WEB_PRINT
+// функция вывод данные в пользовательском блоке на главной
+void user_web_main(httpd_req_t *req)
 {
-    ESP_LOGW(TAG, __func__ );
-    http_args_t *arg = (http_args_t *)args;
-    httpd_req_t *req = (httpd_req_t *)arg->req;
+    ESP_LOGW(TAG, LOG_FMT() );
 
-    httpd_resp_sendstr_chunk(req, html_block_data_no_header_start);
-    httpd_resp_sendstr_chunk(req, "Hello!");
+    //httpd_resp_sendstr_chunk(req, "Hello!");
+    //USER_WEB_PRINT("Hello User!");
+    //USER_WEB_PRINT("Hello User1!");
+    //USER_WEB_PRINT("Hello User2!");
+    //USER_WEB_PRINT("Hello User3!");
 
     //char data[20];
     //sprintf(data, "<br>Temp: %2.1f", sht21_get_temp());
-    //httpd_resp_sendstr_chunk(req, data);
-    //httpd_resp_sendstr_chunk(req, "<br>");
+    //USER_WEB_PRINT(data);
+    //USER_WEB_PRINT("<br>");
 
     //mcp23017_print_button(mcp23017_h, req, "mcp13", 13);
     //relay_print_button(req, "btn1", 1);
     //relay_print_button(req, "btn2", 2);
     //relay_print_button(req, "btn3", 3);
-
-    httpd_resp_sendstr_chunk(req, html_block_data_end);
 }
+#endif 
 
-void user_web_options(http_args_t *args)
+#ifdef CONFIG_USER_WEB_CONFIG
+void user_web_options(httpd_req_t *req)
 {
-    ESP_LOGW("user", __func__ );
-    http_args_t *arg = (http_args_t *)args;
-    httpd_req_t *req = (httpd_req_t *)arg->req;
-        
-    char *buf = malloc( strlen(html_block_data_header_start) + 20 );
-    sprintf(buf, html_block_data_header_start, "User options");
-    httpd_resp_sendstr_chunk(req, buf);
-    free(buf);        
-    httpd_resp_sendstr_chunk(req, "Hello User Options!");
-    httpd_resp_sendstr_chunk(req, html_block_data_end);  
+    ESP_LOGW(TAG, LOG_FMT() );
+       
+    //USER_WEB_PRINT("Hello User Options!");
+    //USER_WEB_PRINT("Hello User1 Options!");
+    //USER_WEB_PRINT("Hello User2 Options!");
+    //USER_WEB_PRINT("Hello User3 Options!");
 
 }
+
 
 void user_process_param(httpd_req_t *req, void *args)
 {
-    ESP_LOGW("user", __func__ );
-    ESP_LOGW("user", "Hello User process param!");
+    ESP_LOGW(TAG, LOG_FMT() );
+    //ESP_LOGW(TAG, "Hello User process param!");
 }
+#endif
 
 //mqtt_add_periodic_publish_callback( const char *topic, func_mqtt_send_cb fn_cb);
 // void mqtt_add_receive_callback( const char *topic, func_mqtt_recv_cb fn_cb); -
