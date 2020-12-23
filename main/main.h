@@ -136,7 +136,7 @@ extern void sntp_start();
     #endif
 
     #ifdef CONFIG_COMPONENT_RELAY
-    //relay_handle_t relay_h;
+    relay_handle_t relay_h;
     //relay_handle_t relay_red_h;
     //relay_handle_t relay_blue_h;
     //relay_handle_t relay_green_h;
@@ -155,6 +155,7 @@ extern void sntp_start();
     ledcontrol_channel_t *ch_red;
     ledcontrol_channel_t *ch_green;
     ledcontrol_channel_t *ch_blue;
+    ledcontrol_channel_t *ch_white;
     ledcontrol_t *ledc_h;
     ledcontrol_t *ledc;
 

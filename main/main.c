@@ -270,8 +270,9 @@ void initialize_modules()
     #endif
 
     #ifdef CONFIG_COMPONENT_RELAY
-    // relay_h = relay_create( "Fan", 0, RELAY_LEVEL_HIGH /*RELAY_LEVEL_LOW*/ /* RELAY_LEVEL_HIGH*/ );
-    // relay_write(relay_h,  RELAY_STATE_CLOSE);
+    #define RELAY_LED_PIN 2
+    relay_h = relay_create( "Led", RELAY_LED_PIN, RELAY_LEVEL_HIGH /*RELAY_LEVEL_LOW*/ /* RELAY_LEVEL_HIGH*/ );
+    relay_write(relay_h,  RELAY_STATE_CLOSE);
 
     // relay_red_h = relay_create( "Red", 15, RELAY_LEVEL_LOW /*RELAY_LEVEL_LOW*/ /* RELAY_LEVEL_HIGH*/ );
     // relay_write(relay_red_h,  RELAY_STATE_CLOSE);
@@ -367,15 +368,22 @@ void initialize_modules()
     ch_blue->name = "Синий";
     ch_blue->group = 1;
 
+    ch_white = calloc(1, sizeof(ledcontrol_channel_t)+1);
+    ch_white->pin = 2;
+    ch_white->channel = 3;
+    ch_white->bright_tbl = TBL_32B;
+    ch_white->name = "Белый";
+    ch_white->group = 2;
 
     // ===== create led controller ============================
-    ledc_h = ledcontrol_create(500, 3);
+    ledc_h = ledcontrol_create(500, 4);
     ledc = (ledcontrol_t *)ledc_h;
 
     // ==== register led channels to led controller =============
     ledc->register_channel(*ch_red);
     ledc->register_channel(*ch_green);
     ledc->register_channel(*ch_blue);
+    ledc->register_channel(*ch_white);
 
     // ====== initialize led controller =======================
     ledc->init();  
@@ -482,8 +490,8 @@ void initialize_modules_http(httpd_handle_t _server)
     #endif
 
     #ifdef CONFIG_LED_CONTROL_HTTP
-    //ledcontrol_http_add_group(ledc_h, "RGB Controller", 1, 5);
-    //ledcontrol_http_add_group(ledc_h, "Сине-зеленая подсветка", 2, 6);
+    ledcontrol_http_add_group(ledc_h, "RGB Controller", 1, 5);
+    ledcontrol_http_add_group(ledc_h, "Белая подсветка", 2, 6);
     ledcontrol_http_init(http_server, ledc_h);
 
         #ifdef CONFIG_RGB_CONTROLLER_HTTP
