@@ -18,9 +18,33 @@ git clone https://github.com/espressif/ESP8266_RTOS_SDK.git
 
 git reset --hard db10c3cbceb435ba99edcc1ef7886fdc4b5064d8
 
-Будет использоваться для сборки проекта IDF v3.4-dev-340-gdb10c3cb-dirty
+3. Применяем разные важные фиксы (был поломан pwm и чтение adc что-то портило)
 
-3. обновляем подмодули
+3.1 bugfix(pwm): support fractional phase
+
+git cherry-pick -x 72cbf0d55ebc27c0707e868338fe1867d3a38d6d
+
+после этого может потребоваться разрешить конфликты, а именно, пойти и поправить файл components/esp8266/driver/pwm.c
+
+далее,
+git add components/esp8266/driver/pwm.c
+git commit
+
+3.2 bugfix(pwm_driver_error): PWM cannot drive GPIO properly because there is no...
+
+git cherry-pick -x -m 1 61c3c1154e6e6901dc1f2cb6dd67d71fb805a86d
+
+3.3 fix(adc): fix rf state error when read adc
+
+git cherry-pick -x -m 1 7f99618d9e27a726a512e22ebe81ccbd474cc530
+
+3.4 fix(freertos): disable other task before disable nmi
+
+git cherry-pick -x -m 1 ea4f93b7278ddb786ec5c8697a51e8d24e59d484 
+
+Будет использоваться для сборки проекта IDF v3.4-dev-344-g0a918648-dirty
+
+4. обновляем подмодули
 git submodule update --recursive
 git submodule foreach git reset --hard
 
