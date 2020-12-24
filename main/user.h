@@ -20,6 +20,8 @@
 void user_setup(void *args);
 
 // функция вызывает в основном цикле каждую секунду
+// вызывается сразу после user_setup и до старта wifi (подключения к точке)
+// до user_http_init и до user_mqtt_init
 void user_loop(uint32_t sec);
 
 void user_http_init(void *args);  // для инициализации компонентов, отображаемых в web, например, кнопки для mcp23017

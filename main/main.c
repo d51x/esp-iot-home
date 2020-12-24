@@ -4,6 +4,8 @@
 static const char *TAG = "MAIN";
 
 static void debug_register_http_print_data();
+static void user_loop_cb(void *arg);
+static void initialize_services(void *arg);
 
 httpd_handle_t http_server = NULL;
 
@@ -43,43 +45,17 @@ void app_main(void)
     initialize_modules();
     user_setup(NULL);
 
-    wifi_init();
-    if ( wifi_cfg->mode != WIFI_MODE_AP)
-    {
-        sntp_start();
-    } else {
-    }
-    // ========================================= HTTP modules initialization START
-    webserver_init(&http_server);
-    
-
-    // ========================================= MQTT modules initialization START
-    //TODO: mqtt enable config option
-    mqtt_init();
-    if ( wifi_cfg->mode != WIFI_MODE_AP)
-    {
-        mqtt_start();
-        initialize_modules_mqtt();
-    } else {
-    }
-
-    initialize_modules_http( http_server );
-    
+    xTaskCreate(initialize_services, "init_srv", 2048, 1000, 9, NULL);
 
     #ifdef CONFIG_SENSOR_MQTT
         mqtt_subscriber_init( http_server );
     #endif
 
     while (true) {
-
-        static uint32_t sec = 0;
-
         #ifdef CONFIG_DEBUG_PRINT_TASK_INFO
             print_tasks_info();
         #endif
-
-        user_loop(sec);
-        sec++;
+        user_loop_cb(NULL);
         vTaskDelay(1000/ portTICK_RATE_MS);
     }
 
@@ -367,6 +343,44 @@ void initialize_modules_http(httpd_handle_t _server)
 
 }
 
+static void initialize_services(void *arg)
+{
+    
+    
+
+    wifi_init();
+    if ( wifi_cfg->mode != WIFI_MODE_AP)
+    {
+        sntp_start();
+    } 
+    else 
+    {
+
+    }
+
+    webserver_init(&http_server);
+    mqtt_init();
+    if ( wifi_cfg->mode != WIFI_MODE_AP)
+    {
+        mqtt_start();
+        initialize_modules_mqtt();
+    } 
+    else 
+    {
+
+    }
+    
+    initialize_modules_http( http_server );
+
+    vTaskDelete(NULL);
+}
+
+static void user_loop_cb(void *arg)
+{
+    static uint32_t sec = 0;
+    user_loop(sec);
+    sec++;
+}
 
 static void main_debug_print(http_args_t *args)
 {

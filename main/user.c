@@ -124,7 +124,8 @@ void user_setup(void *args)
     relay_h = relay_create( "Led", RELAY_LED_PIN, RELAY_LEVEL_HIGH /*RELAY_LEVEL_LOW*/ /* RELAY_LEVEL_HIGH*/ , false);
     relay_write(relay_h,  RELAY_STATE_CLOSE);    
 
-    button_handle_t btn_g4_h = configure_push_button(GPIO_NUM_4, BUTTON_ACTIVE_HIGH);
+    //button_handle_t btn_g4_h = configure_push_button(GPIO_NUM_4, BUTTON_ACTIVE_HIGH);
+    button_handle_t btn_g4_h = configure_push_button(GPIO_NUM_4, BUTTON_ACTIVE_LOW);
     if (btn_g4_h) 
     {
         // регистрируем коллбек короткого нажатия
@@ -203,6 +204,8 @@ void user_mqtt_init(void *args)
 // функция вызывает в основном цикле каждую секунду
 void user_loop(uint32_t sec)
 {
+    //int level = gpio_get_level(GPIO_NUM_4);
+    //ESP_LOGW( TAG, "gpio4 = %d", level);
     // // Set Addr: B4 C0 A8 01 01 00 1E
     // uint8_t cmd[7] = { 0xB4, 0xC0, 0xA8, 0x01, 0x01, 0x00, 0x1E};
     
