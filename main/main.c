@@ -238,6 +238,9 @@ void initialize_modules_mqtt()
 
     #ifdef CONFIG_LED_CONTROLLER
     ledcontrol_mqtt_init(ledc_h);
+        #ifdef CONFIG_RGB_EFFECTS
+        rgbcontrol_mqtt_init(rgb_ledc);
+        #endif
     #endif
 
     #ifdef CONFIG_SENSOR_PZEM004_T
