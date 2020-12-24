@@ -108,7 +108,7 @@ void initialize_modules()
     relay_load_nvs();
     #endif
 
-    #define RELAY_LED_PIN 2
+    //#define RELAY_LED_PIN 2
     //relay_h = relay_create( "Led", RELAY_LED_PIN, RELAY_LEVEL_HIGH /*RELAY_LEVEL_LOW*/ /* RELAY_LEVEL_HIGH*/ , false);
     //relay_write(relay_h,  RELAY_STATE_CLOSE);
 
