@@ -50,3 +50,8 @@ toolchain 5.2.0
 git submodule update --recursive
 git submodule foreach git reset --hard
 
+**4.1 обновление esp-mqtt до одной из крайних версий**
+
+*cd ESP8266_RTOS_SDK/components/esp-mqtt*
+*git checkout master*
+*git reset --hard 9ea804e0ab5368d5ab53ae2301a5fec9d1f12f1a *
