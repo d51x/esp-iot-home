@@ -2,6 +2,12 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../../../../home/d51x/esp/ESP8266_RTOS_SDK"
+		},
+		{
+			"path": "../esp-iot-home-components"
 		}
 	],
 	"settings": {
