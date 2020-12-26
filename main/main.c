@@ -152,46 +152,49 @@ void initialize_modules()
     #endif
 
     #ifdef CONFIG_LED_CONTROLLER
-    // ===== create led channels ============================
-    ch_red = calloc(1, sizeof(ledcontrol_channel_t)); 
-    ch_red->pin = 15;
-    ch_red->channel = 0;
-    ch_red->bright_tbl = TBL_32B;
-    ch_red->name = "Красный";
-    ch_red->group = 1;
-    
-    ch_green = calloc(1, sizeof(ledcontrol_channel_t));
-    ch_green->pin = 12;
-    ch_green->channel = 1;
-    ch_green->bright_tbl = TBL_32B;
-    ch_green->name = "Зеленый";
-    ch_green->group = 1;
+    // // ===== create led channels ============================
+    for (uint8_t i = 0; i < CONFIG_LED_CHANNELS_COUNT; i++)
+    {
+        ch[i] = calloc(1, sizeof(ledcontrol_channel_t)); 
+        ch[i]->channel = i;
+        //ch[i]->group = 1; // по дефолту 0
+        ch[i]->bright_tbl = TBL_32B;
+        char str[12];
+        sprintf(str, "Channel %02d", i);
+        ch[i]->name = strdup(str);
+    }
 
-    ch_blue = calloc(1, sizeof(ledcontrol_channel_t)+1);
-    ch_blue->pin = 13;
-    ch_blue->channel = 2;
-    ch_blue->bright_tbl = TBL_32B;
-    ch_blue->name = "Синий";
-    ch_blue->group = 1;
+    #ifdef CONFIG_LED_CHANNEL0_GPIO
+    ch[0]->pin = CONFIG_LED_CHANNEL0_GPIO;
+    #endif
 
-    ch_white = calloc(1, sizeof(ledcontrol_channel_t)+1);
-    ch_white->pin = 2;
-    ch_white->channel = 3;
-    ch_white->bright_tbl = TBL_32B;
-    ch_white->name = "Белый";
-    ch_white->group = 2;
+    #ifdef CONFIG_LED_CHANNEL1_GPIO
+    ch[1]->pin = CONFIG_LED_CHANNEL1_GPIO;
+    #endif
 
-    // ===== create led controller ============================
-    ledc_h = ledcontrol_create(500, 4);
+    #ifdef CONFIG_LED_CHANNEL2_GPIO
+    ch[2]->pin = CONFIG_LED_CHANNEL2_GPIO;
+    #endif
+
+    #ifdef CONFIG_LED_CHANNEL3_GPIO
+    ch[3]->pin = CONFIG_LED_CHANNEL3_GPIO;
+    #endif
+
+    #ifdef CONFIG_LED_CHANNEL4_GPIO
+    ch[4]->pin = CONFIG_LED_CHANNEL4_GPIO;
+    #endif
+
+    // // ===== create led controller ============================
+    ledc_h = ledcontrol_create(500, CONFIG_LED_CHANNELS_COUNT);
     ledc = (ledcontrol_t *)ledc_h;
 
-    // ==== register led channels to led controller =============
-    ledc->register_channel(*ch_red);
-    ledc->register_channel(*ch_green);
-    ledc->register_channel(*ch_blue);
-    ledc->register_channel(*ch_white);
 
-    // ====== initialize led controller =======================
+    // // ==== register led channels to led controller =============
+    for (uint8_t i = 0; i < CONFIG_LED_CHANNELS_COUNT; i++)
+    {
+        ledc->register_channel(*ch[i]);
+    }
+    // // ====== initialize led controller =======================
     ledc->init();  
 
     #ifdef CONFIG_LED_CONTROL_HTTP
@@ -200,7 +203,17 @@ void initialize_modules()
 
     #ifdef CONFIG_RGB_CONTROLLER
         // === create and init RGB controller ================
-        rgb_ledc = rgbcontrol_init(ledc, ch_red, ch_green, ch_blue);
+        // change group to hide channels from default LED Controller
+        ledcontrol_channel_set_group(ch[CONFIG_RGB_RED_CHANNEL], 255);
+        ledcontrol_channel_set_group(ch[CONFIG_RGB_GREEN_CHANNEL], 255);
+        ledcontrol_channel_set_group(ch[CONFIG_RGB_BLUE_CHANNEL], 255);
+        
+        // change names of rgb channels from default "ChannelX"
+        ledcontrol_channel_set_name(ch[CONFIG_RGB_RED_CHANNEL], "Red");
+        ledcontrol_channel_set_name(ch[CONFIG_RGB_GREEN_CHANNEL], "Green");
+        ledcontrol_channel_set_name(ch[CONFIG_RGB_BLUE_CHANNEL], "Blue");
+
+        rgb_ledc = rgbcontrol_init(ledc, ch[CONFIG_RGB_RED_CHANNEL], ch[CONFIG_RGB_GREEN_CHANNEL], ch[CONFIG_RGB_BLUE_CHANNEL]);
 
         #ifdef CONFIG_RGB_CONTROLLER_HTTP
         http_handlers_count += RGB_CONTROL_HANDLERS_COUNT;
