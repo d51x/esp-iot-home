@@ -152,9 +152,8 @@ extern void sntp_start();
 
 
      #ifdef CONFIG_LED_CONTROLLER
-     #define LED_CHANNELS_COUNT CONFIG_LED_CHANNELS_COUNT
      #if LED_CHANNELS_COUNT > 0 
-     ledcontrol_channel_t *ch[LED_CHANNELS_COUNT];
+     ledcontrol_channel_t *ledc_channels; //[LED_CHANNELS_COUNT];
      #endif
 
     ledcontrol_t *ledc_h;

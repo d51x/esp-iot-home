@@ -152,83 +152,56 @@ void initialize_modules()
     #endif
 
     #ifdef CONFIG_LED_CONTROLLER
-    // // ===== create led channels ============================
-    #if LED_CHANNELS_COUNT > 0
-        for (uint8_t i = 0; i < CONFIG_LED_CHANNELS_COUNT; i++)
+        // // ===== create led channels ============================
+        // TODO: get ledcontrol data from nvs
+        // если функция чтения данных из nvs вернула ошибку, то используем занчения по дуфолту
+        uint8_t led_ch_cnt = ledcontrol_init_channels(&ledc_channels);
+        if ( led_ch_cnt > 0)
         {
-            ch[i] = calloc(1, sizeof(ledcontrol_channel_t)); 
-            ch[i]->channel = i;
-            //ch[i]->group = 1; // по дефолту 0
-            ch[i]->bright_tbl = TBL_32B;
-            char str[12];
-            sprintf(str, "Channel %02d", i);
-            ch[i]->name = strdup(str);
-        }
+            // ===== create led controller ============================
+            ledc_h = ledcontrol_create(500, led_ch_cnt);
+            ledc = (ledcontrol_t *)ledc_h;
 
-        #ifdef CONFIG_LED_CHANNEL0_GPIO
-            ch[0]->pin = CONFIG_LED_CHANNEL0_GPIO;
-        #endif
-
-        #ifdef CONFIG_LED_CHANNEL1_GPIO
-            ch[1]->pin = CONFIG_LED_CHANNEL1_GPIO;
-        #endif
-
-        #ifdef CONFIG_LED_CHANNEL2_GPIO
-            ch[2]->pin = CONFIG_LED_CHANNEL2_GPIO;
-        #endif
-
-        #ifdef CONFIG_LED_CHANNEL3_GPIO
-            ch[3]->pin = CONFIG_LED_CHANNEL3_GPIO;
-        #endif
-
-        #ifdef CONFIG_LED_CHANNEL4_GPIO
-            ch[4]->pin = CONFIG_LED_CHANNEL4_GPIO;
-        #endif
-    
-        // ===== create led controller ============================
-        ledc_h = ledcontrol_create(500, CONFIG_LED_CHANNELS_COUNT);
-        ledc = (ledcontrol_t *)ledc_h;
-
-
-        // ==== register led channels to led controller =============
-        for (uint8_t i = 0; i < CONFIG_LED_CHANNELS_COUNT; i++)
-        {
-            ledc->register_channel(*ch[i]);
-        }
-    
-        // ====== initialize led controller =======================
-        ledc->init();  
-
-        #ifdef CONFIG_LED_CONTROL_HTTP
-            http_handlers_count += LED_CONTROL_HANDLERS_COUNT;
-        #endif
-
-        #ifdef CONFIG_RGB_CONTROLLER
-            // === create and init RGB controller ================
-            // change group to hide channels from default LED Controller
-            ledcontrol_channel_set_group(ch[CONFIG_RGB_RED_CHANNEL], 255);
-            ledcontrol_channel_set_group(ch[CONFIG_RGB_GREEN_CHANNEL], 255);
-            ledcontrol_channel_set_group(ch[CONFIG_RGB_BLUE_CHANNEL], 255);
+            // ==== register led channels to led controller =============
+            for (uint8_t i = 0; i < led_ch_cnt; i++)
+            {
+                ledc->register_channel(ledc_channels[i]);
+            }
             
-            // change names of rgb channels from default "ChannelX"
-            ledcontrol_channel_set_name(ch[CONFIG_RGB_RED_CHANNEL], "Red");
-            ledcontrol_channel_set_name(ch[CONFIG_RGB_GREEN_CHANNEL], "Green");
-            ledcontrol_channel_set_name(ch[CONFIG_RGB_BLUE_CHANNEL], "Blue");
+            // ====== initialize led controller =======================
+            ledc->init();  
 
-            rgb_ledc = rgbcontrol_init(ledc, ch[CONFIG_RGB_RED_CHANNEL], ch[CONFIG_RGB_GREEN_CHANNEL], ch[CONFIG_RGB_BLUE_CHANNEL]);
-
-            #ifdef CONFIG_RGB_CONTROLLER_HTTP
-                http_handlers_count += RGB_CONTROL_HANDLERS_COUNT;
-            #endif 
-
-            #ifdef CONFIG_RGB_EFFECTS
-                // ==== create and init rgb effects =======================
-                // === setup effects to RGB controller  
-                effects = effects_init(rgb_ledc, rgb_ledc->set_color_hsv);
-                rgb_ledc->set_effects( effects );  
+            #ifdef CONFIG_LED_CONTROL_HTTP
+                http_handlers_count += LED_CONTROL_HANDLERS_COUNT;
             #endif
-        #endif
-    #endif
+
+            #ifdef CONFIG_RGB_CONTROLLER
+                // === create and init RGB controller ================
+                // change group to hide channels from default LED Controller
+                ledcontrol_channel_set_group(ledc_channels[CONFIG_RGB_RED_CHANNEL], 255);
+                ledcontrol_channel_set_group(ledc_channels[CONFIG_RGB_GREEN_CHANNEL], 255);
+                ledcontrol_channel_set_group(ledc_channels[CONFIG_RGB_BLUE_CHANNEL], 255);
+                
+                // change names of rgb channels from default "ChannelX"
+                ledcontrol_channel_set_name(ledc_channels[CONFIG_RGB_RED_CHANNEL], "Red");
+                ledcontrol_channel_set_name(ledc_channels[CONFIG_RGB_GREEN_CHANNEL], "Green");
+                ledcontrol_channel_set_name(ledc_channels[CONFIG_RGB_BLUE_CHANNEL], "Blue");
+
+                rgb_ledc = rgbcontrol_init(ledc, ledc_channels[CONFIG_RGB_RED_CHANNEL], ledc_channels[CONFIG_RGB_GREEN_CHANNEL], ledc_channels[CONFIG_RGB_BLUE_CHANNEL]);
+
+                #ifdef CONFIG_RGB_CONTROLLER_HTTP
+                    http_handlers_count += RGB_CONTROL_HANDLERS_COUNT;
+                #endif 
+
+                #ifdef CONFIG_RGB_EFFECTS
+                    // ==== create and init rgb effects =======================
+                    // === setup effects to RGB controller  
+                    effects = effects_init(rgb_ledc, rgb_ledc->set_color_hsv);
+                    rgb_ledc->set_effects( effects );  
+                #endif
+            #endif
+            
+        }
     #endif
 
     #ifdef I2C_HANDLERS_COUNT
