@@ -163,6 +163,7 @@ void initialize_modules()
             ledc = (ledcontrol_t *)ledc_h;
 
             // ==== register led channels to led controller =============
+            // TODO: перенсти функцию регистрации в init, в качестве параметра передать массив каналов
             for (uint8_t i = 0; i < led_ch_cnt; i++)
             {
                 ledc->register_channel(ledc_channels[i]);
@@ -178,16 +179,20 @@ void initialize_modules()
             #ifdef CONFIG_RGB_CONTROLLER
                 // === create and init RGB controller ================
                 // change group to hide channels from default LED Controller
-                ledcontrol_channel_set_group(ledc_channels[CONFIG_RGB_RED_CHANNEL], 255);
-                ledcontrol_channel_set_group(ledc_channels[CONFIG_RGB_GREEN_CHANNEL], 255);
-                ledcontrol_channel_set_group(ledc_channels[CONFIG_RGB_BLUE_CHANNEL], 255);
+                ledcontrol_channel_set_group(&ledc_channels[CONFIG_RGB_RED_CHANNEL], 255);
+                ledcontrol_channel_set_group(&ledc_channels[CONFIG_RGB_GREEN_CHANNEL], 255);
+                ledcontrol_channel_set_group(&ledc_channels[CONFIG_RGB_BLUE_CHANNEL], 255);
                 
                 // change names of rgb channels from default "ChannelX"
-                ledcontrol_channel_set_name(ledc_channels[CONFIG_RGB_RED_CHANNEL], "Red");
-                ledcontrol_channel_set_name(ledc_channels[CONFIG_RGB_GREEN_CHANNEL], "Green");
-                ledcontrol_channel_set_name(ledc_channels[CONFIG_RGB_BLUE_CHANNEL], "Blue");
+                ledcontrol_channel_set_name(&ledc_channels[CONFIG_RGB_RED_CHANNEL], "Red");
+                ledcontrol_channel_set_name(&ledc_channels[CONFIG_RGB_GREEN_CHANNEL], "Green");
+                ledcontrol_channel_set_name(&ledc_channels[CONFIG_RGB_BLUE_CHANNEL], "Blue");
 
-                rgb_ledc = rgbcontrol_init(ledc, ledc_channels[CONFIG_RGB_RED_CHANNEL], ledc_channels[CONFIG_RGB_GREEN_CHANNEL], ledc_channels[CONFIG_RGB_BLUE_CHANNEL]);
+                rgb_ledc = rgbcontrol_init( ledc, 
+                                            &ledc_channels[CONFIG_RGB_RED_CHANNEL], 
+                                            &ledc_channels[CONFIG_RGB_GREEN_CHANNEL], 
+                                            &ledc_channels[CONFIG_RGB_BLUE_CHANNEL]
+                                        );
 
                 #ifdef CONFIG_RGB_CONTROLLER_HTTP
                     http_handlers_count += RGB_CONTROL_HANDLERS_COUNT;
