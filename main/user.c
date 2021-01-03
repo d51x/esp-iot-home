@@ -120,6 +120,7 @@ void user_setup(void *args)
     // }
     //http_handlers_count++;
 
+    #ifdef CONFIG_RELAY_COMPONENT
     #define RELAY_LED_PIN 2
     relay_h = relay_create( "Led", RELAY_LED_PIN, RELAY_LEVEL_HIGH /*RELAY_LEVEL_LOW*/ /* RELAY_LEVEL_HIGH*/ , false);
     relay_write(relay_h,  RELAY_STATE_CLOSE);    
@@ -151,6 +152,7 @@ void user_setup(void *args)
         #define BTN_HOLD_10_SEC 10
         button_add_on_press_cb(btn_g4_h, BTN_HOLD_10_SEC, hold_10s_cb, NULL);
     }
+    #endif
 }
 
 void user_http_init(void *args)
