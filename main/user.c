@@ -120,7 +120,7 @@ void user_setup(void *args)
     // }
     //http_handlers_count++;
 
-    #ifdef CONFIG_RELAY_COMPONENT
+    #ifdef CONFIG_COMPONENT_RELAY
     #define RELAY_LED_PIN 2
     relay_h = relay_create( "Led", RELAY_LED_PIN, RELAY_LEVEL_HIGH /*RELAY_LEVEL_LOW*/ /* RELAY_LEVEL_HIGH*/ , false);
     relay_write(relay_h,  RELAY_STATE_CLOSE);    

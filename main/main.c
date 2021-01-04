@@ -160,17 +160,17 @@ void initialize_modules()
         {
             // ===== create led controller ============================
             ledc_h = ledcontrol_create(500, led_ch_cnt);
-            ledc = (ledcontrol_t *)ledc_h;
+            //ledc = (ledcontrol_t *)ledc_h;
 
             // ==== register led channels to led controller =============
             // TODO: перенсти функцию регистрации в init, в качестве параметра передать массив каналов
             for (uint8_t i = 0; i < led_ch_cnt; i++)
             {
-                ledc->register_channel(ledc_channels[i]);
+                ledc_h->register_channel(ledc_channels[i]);
             }
             
             // ====== initialize led controller =======================
-            ledc->init();  
+            ledc_h->init();  
 
             #ifdef CONFIG_LED_CONTROL_HTTP
                 http_handlers_count += LED_CONTROL_HANDLERS_COUNT;
@@ -188,7 +188,7 @@ void initialize_modules()
                 ledcontrol_channel_set_name(&ledc_channels[CONFIG_RGB_GREEN_CHANNEL], "Green");
                 ledcontrol_channel_set_name(&ledc_channels[CONFIG_RGB_BLUE_CHANNEL], "Blue");
 
-                rgb_ledc = rgbcontrol_init( ledc, 
+                rgb_ledc = rgbcontrol_init( ledc_h, 
                                             &ledc_channels[CONFIG_RGB_RED_CHANNEL], 
                                             &ledc_channels[CONFIG_RGB_GREEN_CHANNEL], 
                                             &ledc_channels[CONFIG_RGB_BLUE_CHANNEL]
