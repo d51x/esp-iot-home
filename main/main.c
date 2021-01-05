@@ -476,5 +476,7 @@ static void main_debug_print(http_args_t *args)
 void debug_register_http_print_data()
 {
     http_args_t *p = calloc(1,sizeof(http_args_t));
+    #ifdef CONFIG_PAGE_DEBUG
     register_print_page_block( "debug", PAGES_URI[ PAGE_URI_DEBUG], 0, main_debug_print, p, NULL, NULL  ); 
+    #endif
 }
