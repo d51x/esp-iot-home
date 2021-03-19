@@ -167,7 +167,7 @@ void user_http_init(void *args)
     #endif
 
     #ifdef CONFIG_LED_CONTROL_HTTP
-    //ledcontrol_http_add_group(ledc_h, "RGB Controller", 1, 5);
+    //ledcontrol_http_add_group(ledc_h, "RGB Controller0", 1, 5);
     ledcontrol_http_add_group(ledc_h, "Белая подсветка", 2, 6);
     #endif    
 

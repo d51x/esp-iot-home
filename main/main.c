@@ -179,9 +179,10 @@ void initialize_modules()
             #ifdef CONFIG_RGB_CONTROLLER
                 // === create and init RGB controller ================
                 // change group to hide channels from default LED Controller
-                ledcontrol_channel_set_group(&ledc_channels[CONFIG_RGB_RED_CHANNEL], 255);
-                ledcontrol_channel_set_group(&ledc_channels[CONFIG_RGB_GREEN_CHANNEL], 255);
-                ledcontrol_channel_set_group(&ledc_channels[CONFIG_RGB_BLUE_CHANNEL], 255);
+                ledcontrol_channel_set_group(&ledc_channels[CONFIG_RGB_RED_CHANNEL], 0);
+                ledcontrol_channel_set_group(&ledc_channels[CONFIG_RGB_GREEN_CHANNEL], 0);
+                ledcontrol_channel_set_group(&ledc_channels[CONFIG_RGB_BLUE_CHANNEL], 0);
+                ledcontrol_channel_set_group(&ledc_channels[3], 0);
                 
                 // change names of rgb channels from default "ChannelX"
                 ledcontrol_channel_set_name(&ledc_channels[CONFIG_RGB_RED_CHANNEL], "Red");
