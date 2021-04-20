@@ -123,7 +123,7 @@ void user_setup(void *args)
     #ifdef CONFIG_COMPONENT_RELAY
     #define RELAY_LED_PIN 2
     relay_h = relay_create( "Led", RELAY_LED_PIN, RELAY_LEVEL_HIGH /*RELAY_LEVEL_LOW*/ /* RELAY_LEVEL_HIGH*/ , false);
-    relay_write(relay_h,  RELAY_STATE_CLOSE);    
+    relay_write(relay_h,  RELAY_STATE_OFF);    
 
     //button_handle_t btn_g4_h = configure_push_button(GPIO_NUM_4, BUTTON_ACTIVE_HIGH);
     button_handle_t btn_g4_h = configure_push_button(GPIO_NUM_4, BUTTON_ACTIVE_LOW);
@@ -136,9 +136,9 @@ void user_setup(void *args)
         short_pressed_cb[0] = &pressed1_cb;
         short_pressed_cb[1] = NULL; //&pressed2_cb; // NULL если не требуется обрабатывать 2-ое (n-Раз) нажатие
         short_pressed_cb[2] = &pressed3_cb;
-
+        void *btn_args = calloc(MAX_SHORT_PRESSED_COUNT, sizeof(void));
         // 1..3 коротких нажатий в течение 500 мсек
-        button_set_on_presscount_cb(btn_g4_h, 500, MAX_SHORT_PRESSED_COUNT, short_pressed_cb);
+        button_set_on_presscount_cb(btn_g4_h, 500, MAX_SHORT_PRESSED_COUNT, short_pressed_cb, btn_args);
 
         // сработает при отпускании после 1 сек не зависимо сколько держали по времени
         #define BTN_HOLD_1_SEC 2
